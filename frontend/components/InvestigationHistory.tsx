@@ -21,6 +21,7 @@ export function addToInvestigationHistory(item: HistoryItem) {
 
 export function InvestigationHistory() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -34,7 +35,13 @@ export function InvestigationHistory() {
     localStorage.removeItem(STORAGE_KEY);
   };
 
-  if (history.length === 0) {
+  const hideItem = (id: string) => {
+    setHiddenIds((prev) => new Set(prev).add(id));
+  };
+
+  const visibleHistory = history.filter((item) => !hiddenIds.has(item.id));
+
+  if (visibleHistory.length === 0) {
     return null;
   }
 
@@ -51,7 +58,7 @@ export function InvestigationHistory() {
       </div>
       
       <div className="mt-4 space-y-2">
-        {history.map((item) => (
+        {visibleHistory.map((item) => (
           <div
             key={item.id}
             className="flex items-center justify-between rounded border border-slate-800 bg-slate-800/50 p-3"
@@ -60,7 +67,7 @@ export function InvestigationHistory() {
               <p className="text-sm font-medium text-white">{item.rootCause}</p>
               <p className="text-xs text-slate-400">{new Date(item.timestamp).toLocaleString()}</p>
             </div>
-            <div className="ml-4 text-right">
+            <div className="ml-4 flex items-center gap-3">
               <span
                 className={`inline-block rounded px-2 py-1 text-xs font-medium ${
                   item.confidence >= 80
@@ -72,6 +79,15 @@ export function InvestigationHistory() {
               >
                 {item.confidence}%
               </span>
+              <button
+                onClick={() => hideItem(item.id)}
+                className="rounded p-1 text-slate-400 hover:text-red-400 hover:bg-red-900/20 transition"
+                title="Hide from view"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
           </div>
         ))}

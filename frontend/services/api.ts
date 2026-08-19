@@ -34,6 +34,7 @@ export interface InvestigationResponse {
     prevention_recommendation: string;
     confidence: number;
     confidence_reasoning: string;
+    llm_duration_seconds?: number;
   };
 }
 
@@ -48,8 +49,6 @@ export interface ClusterInfo {
   name: string;
   type: string;
   source: string;
-  region?: string;
-  endpoint?: string;
 }
 
 export interface ClustersResponse {

@@ -24,14 +24,16 @@ export default function HomePage() {
       const result = await investigateCluster(selectedCluster || undefined);
       setDiagnosis(result.diagnosis);
 
-      // Add to history
-      addToInvestigationHistory({
-        id: Date.now().toString(),
-        timestamp: new Date().toISOString(),
-        rootCause: result.diagnosis.root_cause,
-        confidence: result.diagnosis.confidence,
-        status: "completed",
-      });
+      // Add to history only if there were issues
+      if (result.diagnosis.root_cause !== "No issues detected") {
+        addToInvestigationHistory({
+          id: Date.now().toString(),
+          timestamp: new Date().toISOString(),
+          rootCause: result.diagnosis.root_cause,
+          confidence: result.diagnosis.confidence,
+          status: "completed",
+        });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Investigation failed");
     } finally {
@@ -69,7 +71,10 @@ export default function HomePage() {
 
         <InvestigationProgress isRunning={isInvestigating} />
 
-        <RootCauseCard diagnosis={diagnosis} />
+        <RootCauseCard 
+          diagnosis={diagnosis} 
+          isHealthy={diagnosis?.root_cause === "No issues detected"}
+        />
 
         <div className="mt-8 border-t border-slate-800 pt-6">
           <InvestigationHistory />

@@ -20,8 +20,6 @@ class ClusterInfo(BaseModel):
     name: str
     type: str
     source: str
-    region: Optional[str] = ""
-    endpoint: Optional[str] = ""
 
 
 class ClustersResponse(BaseModel):
@@ -34,9 +32,9 @@ class InvestigateRequest(BaseModel):
 
 @router.get("/clusters", response_model=ClustersResponse)
 def get_clusters() -> ClustersResponse:
-    """Get all available Kubernetes clusters from kubeconfig and AWS EKS."""
+    """Get all available Kubernetes clusters from kubeconfig."""
     try:
-        clusters = ClusterManager.get_all_clusters(settings.kubeconfig_path)
+        clusters = ClusterManager.get_clusters(settings.kubeconfig_path)
         return ClustersResponse(
             clusters=[ClusterInfo(**cluster) for cluster in clusters]
         )

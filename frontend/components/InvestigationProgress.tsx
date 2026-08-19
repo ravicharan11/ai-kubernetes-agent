@@ -12,7 +12,7 @@ const STEPS = [
   { label: "Analyzing Events", description: "Reviewing recent cluster events" },
   { label: "Inspecting Deployments", description: "Checking deployment health and replicas" },
   { label: "Checking Networking", description: "Analyzing services and network policies" },
-  { label: "AI Reasoning", description: "Processing evidence with AI model" },
+  { label: "AI Reasoning", description: "Processing evidence with AI model", isAI: true },
   { label: "Root Cause Found", description: "Generating diagnosis and recommendations" },
 ];
 
@@ -60,20 +60,30 @@ export function InvestigationProgress({ isRunning }: InvestigationProgressProps)
                 isCompleted
                   ? "border-green-900/50 bg-green-900/10"
                   : isCurrent
-                  ? "border-blue-900/50 bg-blue-900/10"
+                  ? step.isAI
+                  ? "border-purple-500/50 bg-purple-900/10"
+                  : "border-blue-900/50 bg-blue-900/10"
                   : "border-slate-800 bg-slate-800/30"
               }`}
             >
               <div className="flex items-center gap-3">
-                <span className={`text-lg ${isCompleted ? "text-green-400" : isCurrent ? "text-blue-400" : "text-slate-600"}`}>
-                  {isCompleted ? "✓" : isCurrent ? "→" : "○"}
+                <span className={`text-lg ${isCompleted ? "text-green-400" : isCurrent ? (step.isAI ? "text-purple-400" : "text-blue-400") : "text-slate-600"}`}>
+                  {isCompleted ? "✓" : isCurrent ? (step.isAI ? "🤖" : "→") : "○"}
                 </span>
                 <div className="flex-1">
                   <p className={`text-sm font-medium ${isCurrent ? "text-white" : "text-slate-400"}`}>
                     {step.label}
                   </p>
                   {isCurrent && (
-                    <p className="mt-1 text-xs text-slate-500">{step.description}</p>
+                    <div className="mt-1">
+                      <p className="text-xs text-slate-500">{step.description}</p>
+                      {step.isAI && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <div className="h-2 w-2 animate-pulse rounded-full bg-purple-400" />
+                          <span className="text-xs text-purple-300">AI model analyzing evidence...</span>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>

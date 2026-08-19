@@ -26,7 +26,6 @@ Frontend Diagnosis
 
 - Docker & Docker Compose (for containerized deployment)
 - OR Python 3.8+, Node.js 18+, kubectl (for local development)
-- AWS CLI configured (for EKS cluster discovery)
 - Groq API key (free from https://console.groq.com/keys)
 
 ### Run with Docker
@@ -120,7 +119,7 @@ ai-kubernetes-agent/
 | Method | Path | Description |
 |---|---|---|
 | GET | `/health` | Service health check |
-| GET | `/clusters` | List available clusters (kubeconfig + AWS EKS) |
+| GET | `/clusters` | List available clusters from kubeconfig |
 | POST | `/investigate` | Investigate cluster and return AI diagnosis |
 
 ### Get Clusters
@@ -129,7 +128,7 @@ ai-kubernetes-agent/
 curl http://localhost:8000/clusters
 ```
 
-Returns list of available clusters from kubeconfig and AWS EKS.
+Returns list of available clusters from kubeconfig.
 
 ### Investigate
 
@@ -181,7 +180,7 @@ Returns Kubernetes evidence plus AI-powered diagnosis:
 
 ## Features
 
-- **Multi-Cluster Support**: Discover and investigate clusters from kubeconfig and AWS EKS
+- **Multi-Cluster Support**: Discover and investigate clusters from kubeconfig
 - **AI-Powered Diagnosis**: Uses Groq LLM for intelligent root cause analysis
 - **Real-time Progress**: Visual investigation progress with step-by-step updates
 - **Actionable Fixes**: Provides kubectl commands to fix identified issues
@@ -192,3 +191,53 @@ Returns Kubernetes evidence plus AI-powered diagnosis:
 ## License
 
 MIT
+
+## Changelog
+
+### 2026-08-19
+
+**Problems Solved:**
+
+1. **AWS CLI dependency removed**
+   - **Problem**: Application required AWS CLI installation and configuration for EKS cluster discovery, adding complexity to deployment
+   - **Solution**: Removed AWS EKS cluster discovery, now only uses kubeconfig for cluster management
+   - **Impact**: Simplified deployment, reduced dependencies, easier setup
+
+2. **Zero confidence on healthy clusters**
+   - **Problem**: When cluster had no issues, confidence score was 0%, confusing users about system reliability
+   - **Solution**: Added healthy cluster detection to return 100% confidence with appropriate message when no issues found
+   - **Impact**: Clear indication of healthy cluster state, improved user trust
+
+3. **Poor cluster selection UX**
+   - **Problem**: Cluster selector had minimal visual feedback, making it hard to identify selected cluster
+   - **Solution**: Enhanced cluster selector with gradient backgrounds, icons, checkmarks, and clear selected state
+   - **Impact**: Better user experience, easier cluster identification, professional UI
+
+4. **No LLM visibility**
+   - **Problem**: Users couldn't tell when LLM was processing or how long it took
+   - **Solution**: Added comprehensive LLM monitoring with backend logging, timing metrics, and UI indicators
+   - **Impact**: Transparency in AI processing, performance monitoring, better debugging
+
+5. **No way to hide investigation items**
+   - **Problem**: Users couldn't remove items from investigation history without deleting all
+   - **Solution**: Added delete button to hide individual items from UI without removing from localStorage
+   - **Impact**: Better history management, cleaner UI, user control
+
+**Technical Changes:**
+
+- **Backend**:
+  - Removed AWS EKS cluster discovery from `ClusterManager`
+  - Added `is_cluster_healthy()` function for health detection
+  - Added LLM timing to diagnosis response (`llm_duration_seconds`)
+  - Added backend logging for LLM calls with timing
+
+- **Frontend**:
+  - Enhanced `ClusterSelector` with gradient backgrounds, icons, and selected state
+  - Added purple theme and animation for AI Reasoning step in `InvestigationProgress`
+  - Added LLM timing badge in `RootCauseCard`
+  - Added delete button to `InvestigationHistory` items
+  - Updated TypeScript interfaces for LLM timing
+
+- **Documentation**:
+  - Updated README to remove AWS CLI requirements
+  - Updated API documentation for kubeconfig-only clusters

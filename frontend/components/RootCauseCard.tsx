@@ -8,6 +8,7 @@ interface Diagnosis {
   prevention_recommendation: string;
   confidence: number;
   confidence_reasoning: string;
+  llm_duration_seconds?: number;
 }
 
 interface RootCauseCardProps {
@@ -39,7 +40,17 @@ export function RootCauseCard({ diagnosis, isHealthy = false }: RootCauseCardPro
 
   return (
     <div className="mt-8 rounded-lg border border-slate-800 bg-slate-900/50 p-6">
-      <h3 className="text-lg font-semibold text-white">Diagnosis</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-white">Diagnosis</h3>
+        {diagnosis.llm_duration_seconds && (
+          <div className="flex items-center gap-2 rounded-lg bg-purple-900/20 px-3 py-1.5 border border-purple-500/30">
+            <span className="text-lg">🤖</span>
+            <span className="text-sm text-purple-300">
+              AI: {diagnosis.llm_duration_seconds}s
+            </span>
+          </div>
+        )}
+      </div>
       
       <div className="mt-4 space-y-4">
         <div>
