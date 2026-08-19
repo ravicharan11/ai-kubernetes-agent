@@ -56,13 +56,20 @@ def investigate_cluster(request: InvestigateRequest = InvestigateRequest()) -> I
     """
     # Switch to specified cluster context if provided
     if request.cluster_name:
+        logger.info(f"Attempting to switch to context: {request.cluster_name}")
         success = ClusterManager.use_cluster_context(request.cluster_name, settings.kubeconfig_path)
         if not success:
+            # Get available contexts for better error message
+            available_contexts = ClusterManager.get_clusters(settings.kubeconfig_path)
+            context_names = [ctx["name"] for ctx in available_contexts]
+            
             raise HTTPException(
                 status_code=400,
-                detail=f"Failed to switch to cluster context: {request.cluster_name}",
+                detail=f"Failed to switch to cluster context: {request.cluster_name}. "
+                       f"Available contexts: {context_names}. "
+                       f"Please check that the context name exists in your kubeconfig.",
             )
-        logger.info(f"Investigating cluster: {request.cluster_name}")
+        logger.info(f"Successfully switched to context: {request.cluster_name}")
 
     try:
         investigation_data = run_investigation()

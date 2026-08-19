@@ -21,7 +21,7 @@ export default function HomePage() {
     setError(null);
 
     try {
-      const result = await investigateCluster(selectedCluster || undefined);
+      const result = await investigateCluster(selectedCluster ?? undefined);
       setDiagnosis(result.diagnosis);
 
       // Add to history only if there were issues
@@ -59,7 +59,7 @@ export default function HomePage() {
         <div className="mt-8">
           <InvestigateButton 
             onInvestigate={handleInvestigate}
-            disabled={isInvestigating || !selectedCluster}
+            disabled={isInvestigating}
           />
         </div>
 

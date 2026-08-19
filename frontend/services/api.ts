@@ -49,6 +49,9 @@ export interface ClusterInfo {
   name: string;
   type: string;
   source: string;
+  cluster?: string;
+  user?: string;
+  is_current?: boolean;
 }
 
 export interface ClustersResponse {

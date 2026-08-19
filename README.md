@@ -105,7 +105,7 @@ ai-kubernetes-agent/
 | Variable | Description |
 |---|---|
 | `GROQ_API_KEY` | Groq API key (get free key from https://console.groq.com/keys) |
-| `GROQ_MODEL` | LLM model ID (default: `llama-3.3-70b-versatile`) |
+| `GROQ_MODEL` | LLM model ID (default: `llama-3.1-8b-instant`) |
 | `KUBECONFIG_PATH` | Path to kubeconfig file |
 
 **Frontend** (`frontend/.env.local`):

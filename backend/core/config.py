@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     )
 
     groq_api_key: str = ""
-    groq_model: str = "llama-3.3-70b-versatile"
+    groq_model: str = "llama-3.1-8b-instant"
     groq_timeout: int = 60
     groq_max_retries: int = 3
     kubeconfig_path: str = ""

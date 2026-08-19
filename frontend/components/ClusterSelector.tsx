@@ -5,7 +5,7 @@ import { getClusters, type ClusterInfo } from "@/services/api";
 
 interface ClusterSelectorProps {
   selectedCluster: string | null;
-  onClusterSelect: (clusterName: string) => void;
+  onClusterSelect: (clusterName: string | null) => void;
 }
 
 export function ClusterSelector({ selectedCluster, onClusterSelect }: ClusterSelectorProps) {
@@ -58,7 +58,7 @@ export function ClusterSelector({ selectedCluster, onClusterSelect }: ClusterSel
   if (clusters.length === 0) {
     return (
       <div className="mt-6 rounded-xl border border-slate-800 bg-slate-900/50 p-6">
-        <p className="text-sm text-slate-400">No contexts found. Configure kubeconfig.</p>
+        <p className="text-sm text-slate-400">No contexts found in kubeconfig. Will use current context.</p>
       </div>
     );
   }
@@ -67,19 +67,33 @@ export function ClusterSelector({ selectedCluster, onClusterSelect }: ClusterSel
     <div className="mt-6 rounded-xl border border-slate-800 bg-slate-900/50 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-slate-300">Select Context</h3>
-          {selectedCluster && (
+          <h3 className="text-sm font-semibold text-slate-300">Select Context (Optional)</h3>
+          {selectedCluster !== null ? (
             <p className="mt-1 text-xs text-slate-500">
               Selected: <span className="text-blue-400">{selectedCluster}</span>
             </p>
+          ) : (
+            <p className="mt-1 text-xs text-slate-500">
+              Will use current kubeconfig context
+            </p>
           )}
         </div>
-        <button
-          onClick={loadClusters}
-          className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs text-slate-400 hover:bg-slate-700 hover:text-slate-300"
-        >
-          Refresh
-        </button>
+        <div className="flex gap-2">
+          {selectedCluster !== null && (
+            <button
+              onClick={() => onClusterSelect(null)}
+              className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs text-slate-400 hover:bg-slate-700 hover:text-slate-300"
+            >
+              Clear
+            </button>
+          )}
+          <button
+            onClick={loadClusters}
+            className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs text-slate-400 hover:bg-slate-700 hover:text-slate-300"
+          >
+            Refresh
+          </button>
+        </div>
       </div>
       
       <div className="mt-4 space-y-2">
@@ -88,14 +102,14 @@ export function ClusterSelector({ selectedCluster, onClusterSelect }: ClusterSel
             key={cluster.name}
             onClick={() => onClusterSelect(cluster.name)}
             className={`w-full rounded-xl border p-4 text-left transition-all ${
-              selectedCluster === cluster.name
+              selectedCluster !== null && selectedCluster === cluster.name
                 ? "border-blue-500 bg-gradient-to-r from-blue-900/30 to-blue-800/20 shadow-lg shadow-blue-500/10"
                 : "border-slate-700 bg-slate-800/30 hover:border-slate-600 hover:bg-slate-800/50"
             }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                {selectedCluster === cluster.name ? (
+                {selectedCluster !== null && selectedCluster === cluster.name ? (
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500">
                     <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -109,24 +123,29 @@ export function ClusterSelector({ selectedCluster, onClusterSelect }: ClusterSel
                   </div>
                 )}
                 <div>
-                  <p className={`font-medium ${selectedCluster === cluster.name ? "text-white" : "text-slate-300"}`}>
+                  <p className={`font-medium ${selectedCluster !== null && selectedCluster === cluster.name ? "text-white" : "text-slate-300"}`}>
                     {cluster.name}
                   </p>
                   <div className="mt-1 flex items-center gap-2">
                     <span className={`rounded-full px-2 py-0.5 text-xs ${
-                      selectedCluster === cluster.name 
+                      selectedCluster !== null && selectedCluster === cluster.name 
                         ? "bg-blue-500/20 text-blue-300" 
                         : "bg-slate-700 text-slate-400"
                     }`}>
                       {cluster.type}
                     </span>
-                    <span className={`text-xs ${selectedCluster === cluster.name ? "text-blue-300" : "text-slate-500"}`}>
+                    {cluster.is_current && (
+                      <span className="rounded-full bg-green-500/20 px-2 py-0.5 text-xs text-green-300">
+                        Current
+                      </span>
+                    )}
+                    <span className={`text-xs ${selectedCluster !== null && selectedCluster === cluster.name ? "text-blue-300" : "text-slate-500"}`}>
                       {cluster.source}
                     </span>
                   </div>
                 </div>
               </div>
-              {selectedCluster === cluster.name && (
+              {selectedCluster !== null && selectedCluster === cluster.name && (
                 <div className="flex items-center gap-2">
                   <span className="rounded-full bg-blue-500 px-3 py-1 text-xs font-medium text-white">
                     Active
