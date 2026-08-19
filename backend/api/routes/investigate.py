@@ -32,7 +32,7 @@ class InvestigateRequest(BaseModel):
 
 @router.get("/clusters", response_model=ClustersResponse)
 def get_clusters() -> ClustersResponse:
-    """Get all available Kubernetes clusters from kubeconfig."""
+    """Get all available Kubernetes contexts from kubeconfig."""
     try:
         clusters = ClusterManager.get_clusters(settings.kubeconfig_path)
         return ClustersResponse(

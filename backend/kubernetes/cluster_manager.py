@@ -6,18 +6,18 @@ from loguru import logger
 
 
 class ClusterManager:
-    """Manages Kubernetes cluster discovery from kubeconfig."""
+    """Manages Kubernetes cluster/context discovery from kubeconfig."""
 
     @staticmethod
     def get_clusters(kubeconfig_path: str) -> List[Dict[str, str]]:
-        """Parse kubeconfig and return list of clusters."""
+        """Parse kubeconfig and return list of contexts (for switching)."""
         try:
             kubeconfig = Path(kubeconfig_path)
             if not kubeconfig.exists():
                 logger.warning(f"Kubeconfig not found at {kubeconfig_path}")
                 return []
 
-            # Use kubectl config view to get clusters
+            # Use kubectl config view to get contexts
             result = subprocess.run(
                 ["kubectl", "config", "view", "-o", "json", f"--kubeconfig={kubeconfig_path}"],
                 capture_output=True,
@@ -30,19 +30,19 @@ class ClusterManager:
                 return []
 
             config = json.loads(result.stdout)
-            clusters = []
+            contexts = []
 
-            for cluster in config.get("clusters", []):
-                cluster_name = cluster.get("name", "Unknown")
-                cluster_info = {
-                    "name": cluster_name,
+            for context in config.get("contexts", []):
+                context_name = context.get("name", "Unknown")
+                context_info = {
+                    "name": context_name,
                     "type": "kubeconfig",
                     "source": "local"
                 }
-                clusters.append(cluster_info)
+                contexts.append(context_info)
 
-            logger.info(f"Found {len(clusters)} clusters in kubeconfig")
-            return clusters
+            logger.info(f"Found {len(contexts)} contexts in kubeconfig")
+            return contexts
 
         except subprocess.TimeoutExpired:
             logger.error("kubectl config view timed out")

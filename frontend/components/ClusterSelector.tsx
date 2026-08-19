@@ -58,7 +58,7 @@ export function ClusterSelector({ selectedCluster, onClusterSelect }: ClusterSel
   if (clusters.length === 0) {
     return (
       <div className="mt-6 rounded-xl border border-slate-800 bg-slate-900/50 p-6">
-        <p className="text-sm text-slate-400">No clusters found. Configure kubeconfig.</p>
+        <p className="text-sm text-slate-400">No contexts found. Configure kubeconfig.</p>
       </div>
     );
   }
@@ -67,7 +67,7 @@ export function ClusterSelector({ selectedCluster, onClusterSelect }: ClusterSel
     <div className="mt-6 rounded-xl border border-slate-800 bg-slate-900/50 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-slate-300">Select Cluster</h3>
+          <h3 className="text-sm font-semibold text-slate-300">Select Context</h3>
           {selectedCluster && (
             <p className="mt-1 text-xs text-slate-500">
               Selected: <span className="text-blue-400">{selectedCluster}</span>

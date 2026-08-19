@@ -22,7 +22,7 @@ def chat_completion(messages: list[dict]) -> str:
             "Get your free API key from https://console.groq.com/keys and add it to backend/.env"
         )
 
-    model = settings.groq_model or "llama-3.1-70b-versatile"
+    model = settings.groq_model or "llama-3.3-70b-versatile"
     last_error = "Unknown error"
 
     for attempt in range(1, settings.groq_max_retries + 1):

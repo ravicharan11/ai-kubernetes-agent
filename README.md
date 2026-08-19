@@ -105,7 +105,7 @@ ai-kubernetes-agent/
 | Variable | Description |
 |---|---|
 | `GROQ_API_KEY` | Groq API key (get free key from https://console.groq.com/keys) |
-| `GROQ_MODEL` | LLM model ID (default: `llama-3.1-70b-versatile`) |
+| `GROQ_MODEL` | LLM model ID (default: `llama-3.3-70b-versatile`) |
 | `KUBECONFIG_PATH` | Path to kubeconfig file |
 
 **Frontend** (`frontend/.env.local`):
@@ -119,7 +119,7 @@ ai-kubernetes-agent/
 | Method | Path | Description |
 |---|---|---|
 | GET | `/health` | Service health check |
-| GET | `/clusters` | List available clusters from kubeconfig |
+| GET | `/clusters` | List available contexts from kubeconfig |
 | POST | `/investigate` | Investigate cluster and return AI diagnosis |
 
 ### Get Clusters
@@ -241,3 +241,31 @@ MIT
 - **Documentation**:
   - Updated README to remove AWS CLI requirements
   - Updated API documentation for kubeconfig-only clusters
+
+**Additional Fixes (2026-08-19):**
+
+6. **Deprecated Groq model causing 400 errors**
+   - **Problem**: Application used decommissioned Groq model `llama-3.1-70b-versatile`, causing 400 errors during diagnosis
+   - **Solution**: Updated to current model `llama-3.3-70b-versatile` in config, LLM client, and documentation
+   - **Impact**: Fixed diagnosis functionality, updated to supported Groq model
+
+7. **Cluster context switching failure**
+   - **Problem**: Cluster discovery returned cluster names but context switching required context names, causing failures
+   - **Solution**: Changed cluster discovery to return context names instead of cluster names from kubeconfig
+   - **Impact**: Fixed multi-cluster context switching, improved cluster selection accuracy
+
+**Technical Changes:**
+
+- **Backend**:
+  - Updated `groq_model` default from `llama-3.1-70b-versatile` to `llama-3.3-70b-versatile` in config
+  - Updated fallback model in LLM client to `llama-3.3-70b-versatile`
+  - Modified `ClusterManager.get_clusters()` to return context names instead of cluster names
+  - Updated API documentation to reflect context-based cluster selection
+
+- **Frontend**:
+  - Updated UI labels from "Select Cluster" to "Select Context" for accuracy
+  - Updated empty state message from "No clusters found" to "No contexts found"
+
+- **Documentation**:
+  - Updated README with new Groq model default
+  - Updated API endpoint descriptions to reflect context-based operation
